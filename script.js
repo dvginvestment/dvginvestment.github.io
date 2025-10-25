@@ -31,10 +31,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 window.addEventListener('scroll', () => {
     const navbar = document.querySelector('.navbar');
     if (window.scrollY > 50) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+        navbar.style.background = '#000000';
+        navbar.style.boxShadow = '0 2px 20px rgba(255, 255, 255, 0.1)';
     } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+        navbar.style.background = '#000000';
         navbar.style.boxShadow = 'none';
     }
 });
@@ -91,12 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(item);
     });
 
-    // Add slide-in-right to contact form
-    const contactForm = document.querySelector('.contact-form');
-    if (contactForm) {
-        contactForm.classList.add('slide-in-right');
-        observer.observe(contactForm);
-    }
 });
 
 // Counter animation for stats
@@ -104,21 +98,13 @@ function animateCounters() {
     const counters = document.querySelectorAll('.stat h4');
     counters.forEach(counter => {
         const target = counter.textContent;
-        if (target === '2021' || target === '100%') {
+        if (target === '100%') {
             let current = 0;
-            const increment = target === '2021' ? 1 : 1;
             const timer = setInterval(() => {
-                current += increment;
-                if (target === '2021') {
-                    counter.textContent = current;
-                    if (current >= 2021) {
-                        clearInterval(timer);
-                    }
-                } else {
-                    counter.textContent = current + '%';
-                    if (current >= 100) {
-                        clearInterval(timer);
-                    }
+                current += 1;
+                counter.textContent = current + '%';
+                if (current >= 100) {
+                    clearInterval(timer);
                 }
             }, 20);
         }
@@ -150,46 +136,6 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Contact form handling
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        // Get form data
-        const formData = new FormData(contactForm);
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const company = formData.get('company');
-        const message = formData.get('message');
-        
-        // Simple validation
-        if (!name || !email || !message) {
-            alert('Please fill in all required fields.');
-            return;
-        }
-        
-        // Email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            alert('Please enter a valid email address.');
-            return;
-        }
-        
-        // Simulate form submission
-        const submitBtn = contactForm.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Sending...';
-        submitBtn.disabled = true;
-        
-        setTimeout(() => {
-            alert('Thank you for your message! We will get back to you soon.');
-            contactForm.reset();
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        }, 2000);
-    });
-}
 
 // Add hover effects to portfolio cards
 document.querySelectorAll('.portfolio-card').forEach(card => {
@@ -324,64 +270,175 @@ function revealText() {
 // Initialize text reveal
 revealText();
 
-// Add particle effect to hero section
-function createParticles() {
+// Add AI data stream effect to hero section
+function createAIDataStreams() {
     const hero = document.querySelector('.hero');
     if (!hero) return;
     
-    const particleContainer = document.createElement('div');
-    particleContainer.style.cssText = `
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = `
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        overflow: hidden;
         pointer-events: none;
+        z-index: 1;
     `;
     
-    for (let i = 0; i < 50; i++) {
-        const particle = document.createElement('div');
-        particle.style.cssText = `
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            animation: float-particle ${Math.random() * 10 + 10}s linear infinite;
-        `;
-        
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 10 + 's';
-        
-        particleContainer.appendChild(particle);
+    hero.appendChild(canvas);
+    
+    const ctx = canvas.getContext('2d');
+    let animationId;
+    
+    // Data nodes
+    const nodes = [];
+    const connections = [];
+    
+    // Initialize nodes
+    function initNodes() {
+        for (let i = 0; i < 15; i++) {
+            nodes.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                size: Math.random() * 3 + 2,
+                pulse: Math.random() * Math.PI * 2,
+                connections: []
+            });
+        }
     }
     
-    hero.appendChild(particleContainer);
+    // Update canvas size
+    function resizeCanvas() {
+        canvas.width = hero.offsetWidth;
+        canvas.height = hero.offsetHeight;
+    }
     
-    // Add CSS animation for particles
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes float-particle {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-                opacity: 0;
+    // Draw connections between nearby nodes
+    function drawConnections() {
+        ctx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
+        ctx.lineWidth = 1;
+        
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const dx = nodes[i].x - nodes[j].x;
+                const dy = nodes[i].y - nodes[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 150) {
+                    const opacity = 1 - (distance / 150);
+                    ctx.globalAlpha = opacity * 0.3;
+                    ctx.beginPath();
+                    ctx.moveTo(nodes[i].x, nodes[i].y);
+                    ctx.lineTo(nodes[j].x, nodes[j].y);
+                    ctx.stroke();
+                }
             }
         }
-    `;
-    document.head.appendChild(style);
+        ctx.globalAlpha = 1;
+    }
+    
+    // Draw data streams
+    function drawDataStreams() {
+        ctx.strokeStyle = 'rgba(0, 255, 255, 0.6)';
+        ctx.lineWidth = 2;
+        
+        for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            const streamLength = 30;
+            const angle = Math.atan2(node.vy, node.vx);
+            
+            ctx.globalAlpha = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(node.x, node.y);
+            ctx.lineTo(
+                node.x - Math.cos(angle) * streamLength,
+                node.y - Math.sin(angle) * streamLength
+            );
+            ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+    }
+    
+    // Draw nodes
+    function drawNodes() {
+        for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            const pulseSize = node.size + Math.sin(node.pulse) * 1;
+            
+            // Outer glow
+            ctx.fillStyle = 'rgba(0, 255, 255, 0.2)';
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, pulseSize * 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Inner core
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, pulseSize, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Data particles around nodes
+            for (let j = 0; j < 3; j++) {
+                const angle = (node.pulse + j * Math.PI * 2 / 3) % (Math.PI * 2);
+                const radius = pulseSize + 15;
+                const px = node.x + Math.cos(angle) * radius;
+                const py = node.y + Math.sin(angle) * radius;
+                
+                ctx.fillStyle = 'rgba(0, 255, 255, 0.6)';
+                ctx.beginPath();
+                ctx.arc(px, py, 1, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+    }
+    
+    // Update nodes
+    function updateNodes() {
+        for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            
+            // Update position
+            node.x += node.vx;
+            node.y += node.vy;
+            
+            // Bounce off edges
+            if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+            if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+            
+            // Keep within bounds
+            node.x = Math.max(0, Math.min(canvas.width, node.x));
+            node.y = Math.max(0, Math.min(canvas.height, node.y));
+            
+            // Update pulse
+            node.pulse += 0.05;
+        }
+    }
+    
+    // Animation loop
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        drawConnections();
+        drawDataStreams();
+        drawNodes();
+        updateNodes();
+        
+        animationId = requestAnimationFrame(animate);
+    }
+    
+    // Initialize
+    resizeCanvas();
+    initNodes();
+    animate();
+    
+    // Handle resize
+    window.addEventListener('resize', () => {
+        resizeCanvas();
+    });
 }
 
-// Initialize particles
-createParticles();
+// Initialize AI data streams
+createAIDataStreams();
