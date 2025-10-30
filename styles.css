@@ -685,6 +685,23 @@ body {
     color: #94a3b8;
 }
 
+.db-group-link {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.db-group-link a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.db-group-link a:hover {
+    color: #00ffff;
+    text-decoration: underline;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .hamburger {
